@@ -86,7 +86,7 @@ int main()
 }
 
 /* 	lex prog1.l
-	cc lex.yy.c 
+	gcc lex.yy.c 
 	./a.out
 */
 
