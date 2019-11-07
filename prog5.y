@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int yyerror();
+int yylex();
+
 %}
 %token ID NUM FOR LE GE EQ NE OR AND
 %right '='
@@ -63,7 +66,7 @@ E2     : E'<'E
          ;   
 %%
 
-int yyerror() {
+int yyerror(const char *s) {
 	printf("Wrong!\n");
 	return 1;
 }
