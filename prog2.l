@@ -5,9 +5,12 @@
 #include<string.h>
 %}
 %%
-"lda "|"sta "|"add "|"sub "|"start "|"end "|"word "|"resw " {yylval.string=strdup(yytext); return INSTRUCTION;}
-[a-zA-Z]* {yylval.string=strdup(yytext); return SYMBOL;}
-[0-9]+ {yylval.number=atoi(yytext); return CONSTANT;}
+"LDA "|"STA "|"ADD "|"SUB "|"START "|"END "|"WORD "|"RESW " {
+		yylval.string=strdup(yytext); 
+		return INSTRUCTION;
+	}
+[a-zA-Z]* { yylval.string=strdup(yytext); return SYMBOL; }
+[0-9]+ { yylval.number=atoi(yytext); return CONSTANT; }
 [\n] ;
 . ;
 %%

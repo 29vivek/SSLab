@@ -6,72 +6,69 @@ int yyerror();
 int yylex();
 
 %}
-%token ID NUM FOR LE GE EQ NE OR AND
-%right '='
+
+%token ID NUM FOR LE GE EQ NE OR AND LESS GREAT PLS MIN MUL DIV EQUALS PP MM TERM OPEN CLOSE FLO FLC
+%right EQUALS
 %left AND OR
-%left '>' '<' LE GE EQ NE
-%left '+' '-'
-%left '*' '/'
-%right UMINUS
-%left '!'
-
+%left LESS GREAT LE GE EQ NE
+%left PLS MIN
+%left MUL DIV
+%left PP MM
 %%
    
-S        : ST S  | DEF S |
-ST       : FOR '(' E ';' E2 ';' E ')' DEF {printf("Input accepted\n");}
-		   | FOR ')' E ';' E2 ';' E ')' DEF {printf("Input not accepted\n");} 
-		   | FOR '(' E ';' E2 ';' E '(' DEF {printf("Input not accepted\n");} 
-   		   | FOR ')' E ';' E2 ';' E '(' DEF {printf("Input not accepted\n");} 
-   		   | FOR '(' E ';' E ')' DEF {printf("Input not accepted\n");} 
-           ;
-DEF    : '{' BODY '}'
-           | E';'
-           | ST
-           |
-           ;
-BODY  : BODY BODY
-           | E ';'       
-           | ST
-           |            
-           ;
-       
-E        : ID '=' E
-          | E '+' E
-          | E '-' E
-          | E '*' E
-          | E '/' E
-          | E '<' E
-          | E '>' E
-          | E LE E
-          | E GE E
-          | E EQ E
-          | E NE E
-          | E OR E
-          | E AND E
-          | E '+' '+'
-          | E '-' '-'
-          | ID 
-          | NUM
-          ;
+S: STMT S 
+    |
+    ;
+STMT: FOR OPEN E TERM E2 TERM E CLOSE DEF { printf("Input accepted\n"); }
+    ;
+DEF: FLO BODY FLC
+    | E TERM
+    | STMT 
+    | TERM
+    ;
+NRML: E TERM NRML
+    |
+    ;
+BODY: STMT
+    | NRML
+    ;
+E: ID EQUALS E
+    | E PLS E
+    | E MIN E
+    | E MUL E
+    | E DIV E
+    | E LESS E
+    | E GREAT E
+    | E LE E
+    | E GE E
+    | E EQ E
+    | E NE E
+    | E OR E
+    | E AND E
+    | E PP
+    | E MM
+    | ID 
+    | NUM
+    ;
+E2: E LESS E
+    | E GREAT E
+    | E LE E
+    | E GE E
+    | E EQ E
+    | E NE E
+    | E OR E
+    | E AND E
+    ;   
 
-   
-E2     : E'<'E
-         | E'>'E
-         | E LE E
-         | E GE E
-         | E EQ E
-         | E NE E
-         | E OR E
-         | E AND E
-         ;   
 %%
 
-int yyerror(const char *s) {
+int yyerror(const char *s) 
+{
 	printf("Wrong!\n");
-	return 1;
+	return 0;
 }
 
-int main() {
+int main() { 
     yyparse();
     return 0;
 }

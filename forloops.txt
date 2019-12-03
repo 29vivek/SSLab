@@ -1,0 +1,17 @@
+for(x=0; x<k; x--) {
+	string=yeah;
+}
+for(i=0;i<n;i++) {
+	for(j=0; j<n; j++) {
+		i=i+2;
+		j=number*2;
+	}
+}
+
+for(i=0; i<j; 99) {}
+for(i=0;i<n;i++);
+for(i=0; i<j && j<10 || x<3; i--) {
+
+}
+
+//terminates when wrong input

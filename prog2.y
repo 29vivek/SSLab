@@ -3,18 +3,20 @@
 #include<stdlib.h>
 #include<string.h>
 int line=0,valid=0,no=0;
+int yylex();
+int yyerror();
 struct opcode
 {
 	char operand[10];
 	char opcode[10];
 };
-struct opcode ref[4]={{"add ","0C"},{"sub ","0D"},{"lda ","AB"},{"sta ","18"}};
+struct opcode ref[4]={{"ADD ","0C"},{"SUB ","0D"},{"LDA ","AB"},{"STA ","18"}};
 
 struct optable
 {
- char res_operand[10];
- int line;
- char res_opcode[10];
+ 	char res_operand[10];
+ 	int line;
+ 	char res_opcode[10];
 }s[10];
 
 int findkey(char *name)
@@ -36,68 +38,66 @@ int findkey(char *name)
 %token <string> INSTRUCTION
 %token <string> SYMBOL
 %%
-ST :  INST ST {valid=1;}
-    |
-INST : LABEL INSTRUCTION SYM{line++;
-				if(findkey($2))
-				{	
-					for(int i=0;i<4;i++)
-					{
-						if(strcmp(ref[i].operand,$2)==0)
-						{
-							strcpy(s[no].res_opcode,ref[i].opcode);
-							strcpy(s[no].res_operand,$2);
-							s[no].line = line;
-							break;
-						}
-					}
-					no++;
-				} 
-			    }
-     | INSTRUCTION SYM{line++;
-				if(findkey($1))
-				{
-					
-					for(int i=0;i<4;i++)
-					{
-						if(strcmp(ref[i].operand,$1)==0)
-						{
-							strcpy(s[no].res_opcode,ref[i].opcode);
-							strcpy(s[no].res_operand,$1);
-							s[no].line = line;
-							break;
-						}
-					}
-					no++;
-				} 
+ST: INST ST { valid=1; }
+  	|
+  	;
+INST: LABEL INSTRUCTION SYM { 
+		line++;
+		if(findkey($2)) {	
+			for(int i=0;i<4;i++) {
+				if(strcmp(ref[i].operand,$2)==0) {
+					strcpy(s[no].res_opcode,ref[i].opcode);
+					strcpy(s[no].res_operand,$2);
+					s[no].line = line;
+					break;
 				}
-     
-LABEL : SYMBOL{;}
-SYM : SYMBOL{;}
-    | CONSTANT{;};
+			}
+			no++;
+		} 
+	}
+    | INSTRUCTION SYM {
+    	line++;
+		if(findkey($1)) {
+			for(int i=0;i<4;i++) {
+				if(strcmp(ref[i].operand,$1)==0){
+					strcpy(s[no].res_opcode,ref[i].opcode);
+					strcpy(s[no].res_operand,$1);
+					s[no].line = line;
+					break;
+				}
+			}
+			no++;
+		} 
+	}
+    ; 
+LABEL: SYMBOL;
+SYM: SYMBOL
+    | CONSTANT
+    ;
 %%
+
 int yyerror()
 {
-	printf("ERROR in CODE\n");
-	exit(0);
+	printf("error\n");
+	return 1;
 }
+
 extern FILE *yyin;
 int main()
 {
 	FILE *fp;
-	fp=fopen("sic.asm","r");
-	yyrestart(fp);
+	fp=fopen("input.txt","r");
+	yyin=fp;
 	yyparse();
 	if(valid==1)
-		printf("VALID INSTRUCTION\n");
-	printf("\n\n----OPTAB CONTENTS\n");
-	printf("INSTRUCTION\tLINE_NO\tOPCODE\n");
+		printf("valid instruction\n");
+	
+	printf("optable has: \n");
+	printf("instr\tline\topcode\n");
 	for(int i=0; i<no; i++)
-	{
-		printf("\n%s\t\t%d\t\t%s",s[i].res_operand,s[i].line,s[i].res_opcode);
-	}
+		printf("\n%s\t%d\t%s",s[i].res_operand,s[i].line,s[i].res_opcode);
+	
 	printf("\n");
-	printf("%d",no);
 	return 0;
 }
 
